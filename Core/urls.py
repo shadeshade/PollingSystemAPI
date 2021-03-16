@@ -3,5 +3,6 @@ from . import views
 
 app_name = "Core"
 urlpatterns = [
-    path('', views.UserViewSet.as_view({'get': 'list'})),
+    path('polls/', views.PollViewSet.as_view({'get': 'list'})),
+    path('polls/<int:pk>/', views.PollViewSet.as_view({'get': 'retrieve'})),
 ]
