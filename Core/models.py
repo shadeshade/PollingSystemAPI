@@ -1,5 +1,7 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
+
 
 def validate_date(start_date, finish_date):
     if start_date > finish_date:
@@ -64,18 +66,16 @@ class Question(models.Model):
             return f"{self.question_text[:40]}..."
         return self.question_text
 
-    def __repr__(self):
-        if len(self.question_text) > 40:
-            return f"{self.question_text[:40]}..."
-        return self.question_text
 
 
-# class Response(models.Model):
-#     created = models.DateTimeField(auto_now_add=True)
-#     updated = models.DateTimeField(auto_now=True)
-#     survey = models.ForeignKey(Poll, on_delete=models.CASCADE)
-#     interviewer = models.CharField('Name of Interviewer', max_length=400)
-#     interviewee = models.CharField('Name of Interviewee', max_length=400)
-#     conditions = models.TextField('Conditions during interview', blank=True, null=True)
-#     comments = models.TextField('Any additional Comments', blank=True, null=True)
-#     interview_uuid = models.CharField("Interview unique identifier", max_length=36)
+class AnswerHead(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
+    is_anonymous = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+
+class Answer(models.Model):
+    answer_head = models.ForeignKey(AnswerHead, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    answer_text = models.TextField()
