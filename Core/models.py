@@ -74,7 +74,7 @@ class AnswerHead(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f'Answer Head {self.answer_head.user.id}'
+        return f'Answer Head {self.user.id}'
 
 
 class Answer(models.Model):
