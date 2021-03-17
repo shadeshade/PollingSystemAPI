@@ -25,13 +25,13 @@ class Poll(models.Model):
 def validate_list(value):
     values = value.split(',')
     if len(values) < 2:
-        raise ValidationError("Need more than one question for the poll")
+        raise ValidationError("Need more than one choice for the poll")
 
 
 class Question(models.Model):
     TEXT = 'text'
     SELECT = 'select'
-    SELECT_MULTIPLE = 'select-multiple'
+    SELECT_MULTIPLE = 'select_multiple'
 
     QUESTION_TYPES = (
         (TEXT, 'Text'),

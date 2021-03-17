@@ -1,4 +1,4 @@
-from rest_framework import permissions
+from rest_framework import permissions, status
 from rest_framework import viewsets
 from rest_framework.response import Response
 
@@ -41,7 +41,7 @@ class PollViewSet(viewsets.ModelViewSet):
         serializer = AllAnswersSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-        print()
+            return status.HTTP_201_CREATED
 
 # {
 #         "user_id": 1,
