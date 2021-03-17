@@ -67,15 +67,20 @@ class Question(models.Model):
         return self.question_text
 
 
-
 class AnswerHead(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     poll = models.ForeignKey(Poll, on_delete=models.CASCADE)
     is_anonymous = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return f'Answer Head {self.answer_head.user.id}'
+
 
 class Answer(models.Model):
-    answer_head = models.ForeignKey(AnswerHead, on_delete=models.CASCADE)
+    answer_head = models.ForeignKey(AnswerHead, related_name='all_answers', on_delete=models.CASCADE)
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     answer_text = models.TextField()
+
+    def __str__(self):
+        return f'Answer {self.answer_head.user.id}'

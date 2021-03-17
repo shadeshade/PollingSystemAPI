@@ -1,11 +1,11 @@
-from rest_framework import permissions, status
+import datetime
+
+from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 
-from .models import Poll, Question
-from .serializers import PollSerializer, QuestionSerializer, AllAnswersSerializer
-from django.db.models import Q
-import datetime
+from .models import Poll, AnswerHead
+from .serializers import PollSerializer, QuestionSerializer, AllAnswersSerializer, AnswerHeadSerializer
 
 time_now = datetime.datetime.now()
 
@@ -16,7 +16,7 @@ class PollViewSet(viewsets.ModelViewSet):
 
     def list(self, request, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
-        queryset = queryset.filter(Q(start_date__lte=time_now) & Q(finish_date__gte=time_now))
+        queryset = queryset.filter(start_date__lte=time_now, finish_date__gte=time_now)
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -28,8 +28,6 @@ class PollViewSet(viewsets.ModelViewSet):
     def retrieve(self, request, *args, **kwargs):
         serializer_data = []
         instance = self.get_object()
-        serializer = self.get_serializer(instance)
-        # serializer_data.append(serializer.data)
         questions = [question for question in instance.questions.all()]
         for question in questions:
             question_serializer = QuestionSerializer(question)
@@ -43,20 +41,18 @@ class PollViewSet(viewsets.ModelViewSet):
             serializer.save()
             return status.HTTP_201_CREATED
 
-# {
-#         "user_id": 1,
-#         "question_id": 1,
-#         "response": "1"
-#     }
 
-# class ResponseViewSet(viewsets.ModelViewSet):
-#     queryset = Question.objects.all()
-#     serializer_class = QuestionSerializer
-#
-#     def post(self, request, *args, **kwargs):
-#         if request.method == 'POST':
-#             # form = ResponseForm(request.POST, survey=survey)
-#             print('huray')
-#             print('huray')
-#             # if form.is_valid():
-#             #     response = form.save()
+class AnswerViewSet(viewsets.ModelViewSet):
+    queryset = AnswerHead.objects.all()
+    serializer_class = AnswerHeadSerializer
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset().filter(user_id=kwargs['pk'])
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
-from rest_framework import serializers
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from rest_framework import serializers
 
 from .models import Poll, Question, Answer, AnswerHead
 
@@ -14,7 +14,6 @@ class PollSerializer(serializers.ModelSerializer):
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        # fields = ['question_type', 'created']
         fields = '__all__'
 
 
@@ -38,7 +37,8 @@ class AnswerSerializer(serializers.ModelSerializer):
             raise ValidationError
 
         if attrs["question"].question_type in ("select", "select_multiple"):
-            check_choices = set(el.strip() for el in attrs["answer_text"].split(',')) - set(el.strip() for el in attrs["question"].choices.split(','))
+            check_choices = set(el.strip() for el in attrs["answer_text"].split(',')) - set(
+                el.strip() for el in attrs["question"].choices.split(','))
             if check_choices:
                 raise ValidationError
         return attrs
@@ -47,11 +47,10 @@ class AnswerSerializer(serializers.ModelSerializer):
 class AllAnswersSerializer(serializers.Serializer):
     """
     {
-        "user_id": 1,
+        "user_id": 12,
         "answers": [
             {"question": 1, "answer_text": "a,b,e"},
-            {"question": 2, "answer_text": "a,b,e"},
-            {"question": 3, "answer_text": "a,b,e"}
+            ...
         ]
     }
     """
@@ -89,16 +88,14 @@ class AllAnswersSerializer(serializers.Serializer):
         return answer_head
 
 
-"""
+class AnswerDetailedSerializer(AnswerSerializer):
+    question = QuestionSerializer()
 
-{
-        "user_id": 1,
-        "answers": [
-            {"question": 1, "answer_text": "qwe, eqw"},
-            {"question": 2, "answer_text": "ew"},
-            {"question": 3, "answer_text": "cxz,czxcxz"},
-            {"question": 4, "answer_text": "cxz,czxcxz"}
-        ]
-    }
 
-"""
+class AnswerHeadSerializer(serializers.ModelSerializer):
+    poll = PollSerializer()
+    answers = AnswerDetailedSerializer(source='all_answers', many=True)
+
+    class Meta:
+        model = AnswerHead
+        exclude = ['user']
