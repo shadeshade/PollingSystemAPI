@@ -1,6 +1,11 @@
-## API setup/guide
+## API setup/guide instructions
 
-##GET /api/polls/
+Run the following commands to get started:
+```
+sh ./install.sh
+sh ./run.sh
+```
+## GET /api/polls/
 Get a list of available polls 
 * ### Response 200
 
@@ -16,7 +21,7 @@ Get a list of available polls
     ...
 ]
 ```
-##GET /api/polls/\<int:pk>/
+## GET /api/polls/\<int:pk>/
 Get a list of the chosen poll
 + ### URL parameters
     + `<int:pk>` - id of a poll
@@ -66,7 +71,7 @@ Send your answers to questions
     E.g. `"answer_text"`: `"Morbi a justo erat, Nunc faucibus enterdum"`
     + the number of answers must be equal to the number of questions
     + set `"is_anonymous"` if needed (default `false`)
-##GET /api/results/\<int:pk>/
+## GET /api/results/\<int:pk>/
 Get a list of selected answers
 + ### URL parameters
     + `<int:pk>` - id of a user
